@@ -9,31 +9,22 @@ const {
         GraphQLSchema,
         GraphQLList,
         GraphQLInt,
-        GraphQLID
+        GraphQLID,
+        GraphQLNonNull
       } = graphql;
-
-// dummy data
-// var pokemons = [
-//   { id: '25', name: 'Pikachu', types: ['Electric'], moveId: ['1', '2'] },
-//   { id: '26', name: 'Raichu', types: ['Electric'], moveId: ['1', '3'] }
-// ];
-
-// var moves = [
-//   { id: '1', name: 'Thunderbolt', power: 120, pokemonId: '25' },
-//   { id: '2', name: 'Iron Tail', power: 70, pokemonId: '25' },
-//   { id: '3', name: 'Volt Switch', power: 60, pokemonId: '26' }
-// ];
 
 const PokemonType = new GraphQLObjectType({
   name: 'Pokemon',
   fields: () => ({
     no: { type: GraphQLInt },
     name: { type: GraphQLString },
-    types: { type: new GraphQLList(GraphQLString) },
+    types: { type: GraphQLList(GraphQLString) },
+    // moveId: { type: GraphQLList(GraphQLID)},
     moves: {
       type: new GraphQLList(MoveType),
       resolve(parent, args) {
-        // return _.filter(moves, { id: parent.moveId[0] }); // Todo Fix many to many
+        return Move.find({ canUsePokemonId: parent.id }) // Todo Fix many to many
+        // return _.filter(Move, { canUsePokemonId: parent.id })
       }
     }
   })
@@ -65,6 +56,7 @@ const RootQuery = new GraphQLObjectType({
       resolve(parent, args) {
         // code to get data from db / other source
         // return _.find(pokemons, { id: args.id });
+        return Pokemon.findById(args.id);
       }
     },
     move: {
@@ -72,18 +64,21 @@ const RootQuery = new GraphQLObjectType({
       args: { id: { type: GraphQLID } },
       resolve(parent, args) {
         // return _.find(moves, { id: args.id });
+        return Move.findById(args.id);
       }
     },
     pokemons: {
       type: new GraphQLList(PokemonType),
       resolve(parent, args) {
         // return pokemons;
+        return Pokemon.find({});
       }
     },
     moves: {
       type: new GraphQLList(MoveType),
       resolve(parent, args) {
         // return moves;
+        return Move.find({});
       }
     }
   }
@@ -95,8 +90,8 @@ const Mutation = new GraphQLObjectType({
     addPokemon: {
       type: PokemonType,
       args: {
-        no: {type: GraphQLInt },
-        name: { type: GraphQLString },
+        no: {type: new GraphQLNonNull(GraphQLInt) },
+        name: { type: new GraphQLNonNull(GraphQLString) },
         types: { type: new GraphQLList(GraphQLString) },
         moveId: { type: new GraphQLList(GraphQLID) }
       },
@@ -114,9 +109,9 @@ const Mutation = new GraphQLObjectType({
       type: MoveType,
       args: {
         no: { type: GraphQLInt },
-        name: { type: GraphQLString },
+        name: { type: new GraphQLNonNull(GraphQLString) },
         power: { type: GraphQLInt },
-        type: { type: GraphQLString },
+        type: { type: new GraphQLNonNull(GraphQLString) },
         canUsePokemonId: { type: new GraphQLList(GraphQLID) }
       },
       resolve(parent, args) {
