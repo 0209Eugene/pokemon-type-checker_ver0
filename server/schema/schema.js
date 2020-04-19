@@ -16,6 +16,7 @@ const {
 const PokemonType = new GraphQLObjectType({
   name: 'Pokemon',
   fields: () => ({
+    id: { type: GraphQLID },
     no: { type: GraphQLInt },
     name: { type: GraphQLString },
     types: { type: GraphQLList(GraphQLString) },
@@ -23,8 +24,7 @@ const PokemonType = new GraphQLObjectType({
     moves: {
       type: new GraphQLList(MoveType),
       resolve(parent, args) {
-        return Move.find({ canUsePokemonId: parent.id }) // Todo Fix many to many
-        // return _.filter(Move, { canUsePokemonId: parent.id })
+        return Move.find({ canUsePokemonId: parent.id })
       }
     }
   })
@@ -33,17 +33,12 @@ const PokemonType = new GraphQLObjectType({
 const MoveType = new GraphQLObjectType({
   name: 'Move',
   fields: () => ({
+    id: { type: GraphQLID },
     no: { type: GraphQLInt }, 
     name: { type: GraphQLString },
     type: { type: GraphQLString },
     power: { type: GraphQLInt },
     canUsePokemonId: { type: GraphQLList(GraphQLID) }
-    // canUsePokemons: {
-    //   type: new GraphQLList(PokemonType),
-    //   resolve(parent, args) {
-    //     return _.filter(pokemons, {id: parent.pokemonId }) // Todo Fix many to many
-    //   }
-    // }
   })
 });
 

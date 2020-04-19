@@ -7,7 +7,9 @@ class PokemonList extends Component {
   render() {
     return (
       <div>
-        <DisplayPokemonList />
+        <ul id="pokemonList">
+          <DisplayPokemonList />
+        </ul>
       </div>
     );
   }
