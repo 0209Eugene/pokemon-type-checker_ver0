@@ -1,17 +1,7 @@
 import React from 'react';
-import { gql } from 'apollo-boost';
 import { useQuery } from '@apollo/react-hooks';
+import { getPokemonsQuery } from '../../queries/queries';
 
-const getPokemonsQuery = gql`
-{
-  pokemons{
-    id,
-    no,
-    name,
-    types
-  }
-}
-`;
 
 function DisplayPokemonList() {
     const { loading, error, data } = useQuery(getPokemonsQuery);
@@ -22,6 +12,6 @@ function DisplayPokemonList() {
               <li key={pokemon.id}>{pokemon.name}</li>
           )
       });
-  }
+}
 
 export default DisplayPokemonList;
